@@ -1,31 +1,31 @@
 <template>
-    <v-card style="min-height:200px" :style="'background-image: url('+data.background.value+');'"
-      class="extra-background-cover" width="100%" height="100%">
-      <slot name='edit'></slot>
-      <div class='extra-background-card'
-        :style="'background-color:'+data.background.color+';opacity:'+data.background.opacity/100"></div>
-      <div style='position:absolute;width:100%;height:100%;;max-height:100%'  @click='edit("background")'>
-        <v-layout row wrap fill-height style='margin:0'>
-          <v-flex d-flex xs12 :style="'height:'+layout.height1">
-            <v-container fill-height style='padding:1%'>
-              <dash-text :data='data.title' ref='title' :onclick='function(){edit("title");}' ></dash-text>
-            </v-container>
-          </v-flex>
-          <v-flex d-flex :style="'width:'+layout.width1+';height:'+layout.height2">
-            <v-container fill-height>
-              <dash-text :data='data.text' ref='text' :onclick='function(){edit("text");}' ></dash-text>
-            </v-container>
-          </v-flex>
-          <v-flex d-flex :style="'width:'+layout.width1+';height:'+layout.height3">
-            <v-container fill-height style='text-align:center;padding:0'>
-              <img :src="'https://api.qrserver.com/v1/create-qr-code/?data='+data.json.data.notice_url+'&size=800x800'"
-                :style="'min-height:'+data.qr_size.size+'%;height:50px;display: block;margin-left: auto;margin-right: auto;'"
-                @click="window.open(data.json.data.notice_url)">
-            </v-container>
-          </v-flex>
-        </v-layout>
-      </div>
-    </v-card>
+  <v-card style="min-height:200px" :style="'background-image: url('+data.background.value+');'"
+    class="extra-background-cover" width="100%" height="100%">
+    <slot name='edit'></slot>
+    <div class='extra-background-card'
+      :style="'background-color:'+data.background.color+';opacity:'+data.background.opacity/100"></div>
+    <div style='position:absolute;width:100%;height:100%;;max-height:100%' @click='edit("background")'>
+      <v-layout row wrap fill-height style='margin:0'>
+        <v-flex d-flex xs12 :style="'height:'+layout.height1">
+          <v-container fill-height style='padding:1%'>
+            <dash-text :data='data.title' ref='title' :onclick='function(){edit("title");}'></dash-text>
+          </v-container>
+        </v-flex>
+        <v-flex d-flex :style="'width:'+layout.width1+';height:'+layout.height2">
+          <v-container fill-height>
+            <dash-text :data='data.text' ref='text' :onclick='function(){edit("text");}'></dash-text>
+          </v-container>
+        </v-flex>
+        <v-flex d-flex :style="'width:'+layout.width1+';height:'+layout.height3">
+          <v-container fill-height style='text-align:center;padding:0'>
+            <img :src="'https://api.qrserver.com/v1/create-qr-code/?data='+data.json.data.notice_url+'&size=800x800'"
+              :style="'min-height:'+data.qr_size.size+'%;height:50px;display: block;margin-left: auto;margin-right: auto;'"
+              @click="window.open(data.json.data.notice_url)">
+          </v-container>
+        </v-flex>
+      </v-layout>
+    </div>
+  </v-card>
 
 </template>
 
@@ -46,9 +46,9 @@
           },
           title: {
             type: 'dash-form-text',
-            name: 'Titulo',
-            size: "6",
-            color: "white",
+            name: 'Título',
+            size: "7",
+            color: "black",
             align: 'center',
             value: "Título",
             font: "bold",
@@ -56,9 +56,9 @@
           text: {
             type: 'dash-form-textarea',
             name: 'Texto',
-            size: "4",
-            color: "white",
-            align: 'justify',
+            size: "6",
+            color: "#FFFFFF",
+            align: 'center',
             value: "Texto",
             font: "regular",
 
@@ -75,9 +75,9 @@
             name: "Dados JSON",
             value: "",
             data: {
-              "title": "",
-              "pretext": "",
-              "image": "",
+              "title": null,
+              "pretext": null,
+              "image": null,
               "notice_url": "oi"
             }
           }
@@ -95,9 +95,7 @@
         this.getNotice();
       },
       "data.json.data": function () {
-
         if (this.data.json.data != null) {
-
           if (this.data.json.data.title != null) this.data.title.value = this.data.json.data.title;
           if (this.data.json.data.pretext != null) this.data.text.value = this.data.json.data.pretext;
           if (this.data.json.data.image != null) this.data.background.value = this.data.json.data.image;
@@ -107,13 +105,12 @@
     methods: {
       getNotice: function () {
         if (this.data.json.value != "") {
-          $.ajax({
-            url: this.data.json.value,
-            dataType: "JSON",
-            method: 'GET',
-          }).done(response => {
+
+          axios.get(this.data.json.value).then(response => {
             this.data.json.data = response;
             this.setLayout(this.father.getSizerType());
+          }).catch((e) => {
+
           })
         }
       },

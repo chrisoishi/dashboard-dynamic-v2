@@ -2,6 +2,7 @@ import Vue from "vue"
 import Dashboard from "./views/dashboard";
 import Login from "./views/login"
 import Loading from "./views/loading"
+import Survey from "./views/survey"
 import Register from "./views/register"
 import VueRouter from 'vue-router'
 import fs from './services/firebase_service';
@@ -43,6 +44,11 @@ const routes = [{
     {
         path: '/loading',
         component: Loading,
+        //beforeEnter: (to, from, next) => auth(next)
+    },
+    {
+        path: '/survey/:id',
+        component: Survey,
         //beforeEnter: (to, from, next) => auth(next)
     },
 ];

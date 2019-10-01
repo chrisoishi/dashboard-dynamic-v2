@@ -36,16 +36,16 @@
       },
       setConfig: function (cfg, card, onload) {
         this.$emit('save', {
-          dash: this.index,
+          dash: this.index-1,
           cfg: cfg,
           onload: onload
         });
       },
-      start: function () {
-        this.$refs.card1.start();
+      onPageJoin: function () {
+        this.$refs.card1.onPageJoin();
       },
-      end: function () {
-        this.$refs.card1.end();
+      onPageLeave: function () {
+        this.$refs.card1.onPageLeave();
       },
       load(cfg) {
         if (cfg != null & cfg != "undefined") {

@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import $ from 'jquery';
   export default {
     props: {
       size: Number
@@ -20,9 +21,10 @@
     },
     methods: {
       resize: function () {
-        div = $(this.$refs.container);
-        size = div.height() / window.innerHeight;
-        prop = div.width() / div.height()
+        var div = $(this.$refs.container);
+        var size = div.height() / window.innerHeight;
+        var prop = div.width() / div.height()
+        var size2 = 0;
         if (prop > 1) size2 = 1 + (prop * 0.2);
         else size2 = 1;
         size = size * size2;

@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap>
     <v-flex xs12>
-      <v-text-field :placeholder="name" :value='value.value' v-on:input="change($event,'value')"></v-text-field>
+      <v-text-field  outlined :label="name" :value='value.value' v-on:input="change($event,'value')"></v-text-field>
     </v-flex>
 
     <v-flex xs12>

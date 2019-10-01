@@ -2,17 +2,15 @@ import routes from "./routes";
 export default {
     watch: {
         $route(to, from) {
-            this.connection.id = this.$route.params.id;
-            this.connection.status = true;
-            this.shows.popups.new_connection=false;
-            this.configs_load();
-        }
+
+        },
     },
     data() {
         return {
             connection: {
                 id: "",
                 status: false,
+                is_edit: false,
             },
         }
     },
@@ -53,23 +51,17 @@ export default {
             }
 
         },
-        conn_start: function () {
-            // $.ajax({
-            //     url: routes.connection.start,
-            //     dataType: "JSON",
-            //     method: 'POST',
-            //     data: {
-            //         dash_id: this.connection.id,
-            //         connection: this.connection.id,
-            //     },
-            //     headers: vars.header
-            // })
+        conn_start: function (id,is_edit) {
+            this.connection.is_edit = is_edit;
+            if(!is_edit)this.dashboard.apresentation.active=true;
+            this.connection.id = id;
+            this.connection.status = true;
+            this.shows.popups.new_connection=false;
+            this.configs_load();
 
         },
         conn_editor() {
-            if (this.connection.id.length == 5) {
-                this.$router.push("dash/" + this.connection.id);
-            }
+            
         },
     }
 }

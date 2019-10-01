@@ -29,42 +29,43 @@ export default {
             ]
         }, {
             text: 'Cartões',
-            cards: [{
-                    layout: 'dash-card-carrosel',
-                    content: 'Carrosel de imagens',
-                    rotate: "90",
-                    icon: "view_day"
-                },
+            cards: [
+                // {
+                //     layout: 'dash-card-carrosel',
+                //     content: 'Carrosel de imagens',
+                //     rotate: "90",
+                //     icon: "view_day"
+                // },
                 {
                     layout: 'dash-card-image',
                     content: 'Imagem com texto',
                     rotate: "0",
                     icon: "image"
                 },
-                {
-                    layout: 'dash-card-birthday',
-                    content: 'Aniversariante do mês',
-                    rotate: "0",
-                    icon: "date_range"
-                },
+                // {
+                //     layout: 'dash-card-birthday',
+                //     content: 'Aniversariante do mês',
+                //     rotate: "0",
+                //     icon: "date_range"
+                // },
                 {
                     layout: 'dash-card-survey',
                     content: 'Enquete',
                     rotate: "0",
                     icon: "list"
                 },
-                {
-                    layout: 'dash-card-feed',
-                    content: 'Feed de notícia',
-                    rotate: "0",
-                    icon: "chrome_reader_mode"
-                },
+                // {
+                //     layout: 'dash-card-feed',
+                //     content: 'Feed de notícia',
+                //     rotate: "0",
+                //     icon: "chrome_reader_mode"
+                // },
                 {
                     layout: 'dash-card-video',
                     content: 'Vídeo',
                     rotate: "0",
                     icon: "play_arrow"
-                }
+                },
             ]
         }, ]
     }

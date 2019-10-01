@@ -6,6 +6,14 @@ export default {
     data() {
         return {
             configs: {
+                general: {
+                    title: "",
+                    apresentation: false,
+                    apresentation_time: 10,
+                    current_page: 1,
+                    
+                },
+
                 settings: {
                     title: "",
                     page_current: 1,
@@ -14,14 +22,22 @@ export default {
                     sync: null,
                     updated_level: 0,
                 },
-                dashboards: {},
+                dashboards: [],
                 data_card: {},
             }
         }
     },
+    watch: {
+        "configs.general.current_page"(newV, oldV) {
+            this.configs_save();
+            this.$refs.dash[newV - 1].onPageJoin();
+            this.$refs.dash[oldV - 1].onPageLeave();
+            
+        },
+    },
     methods: {
         configs_save: function () {
-            if (this.sets.editor) {
+            if (this.connection.is_edit) {
                 if (this.editing_template) {
                     this.saveDash(true);
                 }
@@ -29,6 +45,7 @@ export default {
                 this.configs.settings.page_current = this.dashboard.pages.current;
                 this.configs.settings.number_dashs = this.dashboard.pages.total;
                 this.configs.settings.updated_level++;
+                console.log("asfasfas");
                 fs.dashSaveConfig(this.connection.id, this.configs).then((a) => {}).catch((e) => {
                     console.log(e);
                 });
@@ -37,22 +54,13 @@ export default {
         configs_load: function () {
             fs.dashLoadConfig(this.connection.id, (snapshot) => {
                 var response = snapshot.data();
-                this.configs.settings = response.settings;
                 if (response.hasOwnProperty("dashboards")) this.configs.dashboards = response.dashboards;
-                // if (response.hasOwnProperty("data_card")) this.configs.data_cards = response.data_cards;
-                // this.configs.settings.updated_level = parseInt(this.configs.settings.updated_level);
-                // if (this.configs.settings.sync != null & !this.sets.editor) {
-                //     this.connection.id = this.configs.settings.sync
-                //     return;
-                // }
+                if (response.hasOwnProperty("general")) this.configs.general = response.general;
+                if (this.configs.dashboards.length == 0) {
 
-                // if (!this.block_init_settings) this.dashboard.apresentation.active = response.settings.apresentation == "true" ? true : false;
-                // if (!this.dashboard.apresentation.active && !this.sets.editor & !this.block_init_settings) this.dashboard.pages.current =
-                //     parseInt(this.configs
-                //         .settings.page, 10);
-
-                // this.dashboard.pages.total = parseInt(response.settings.number_dashs);
-                // this.block_init_settings = false;
+                    this.configs.dashboards.push({});
+                    alert(this.configs.dashboards.length);
+                }
                 Vue.nextTick(() => {
                     this.configs_sync();
                 });
@@ -60,15 +68,17 @@ export default {
 
         },
         configs_set: function (config) {
-            this.configs.dashboards["dash" + config.dash] = config.cfg;
+            this.configs.dashboards[config.dash] = config.cfg;
             if (!config.onload) {
                 this.configs_save();
             }
         },
         configs_sync() {
-            for (var i = 0; i < this.dashboard.pages.total; i++) {
-                if (this.configs.dashboards['dash' + (i + 1)] == "undefined") this.configs.dashboards['dash' + (i + 1)] = null;
-                this.$refs.dash[i].load(this.configs.dashboards['dash' + (i + 1)]);
+            for (var i = 0; i < this.configs.dashboards.length; i++) {
+                if (Object.keys(this.configs.dashboards[i]).length != 0) {
+                    console.log(this.$refs.dash);
+                    this.$refs.dash[i].load(this.configs.dashboards[i]);
+                }
             }
         }
     }

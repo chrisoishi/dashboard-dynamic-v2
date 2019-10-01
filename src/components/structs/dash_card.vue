@@ -54,48 +54,50 @@
         return this.$root.dash.$data;
       },
       actions() {
+        var actions = [];
         if (this.app.models.current_card_cache.type) {
-          return [{
+          actions.push({
             icon: "check_box",
             tip: "Colar cartão aqui",
             action: () => {
               this.paste();
             }
-          }]
-        } else {
-          var actions = [];
-          if(this.cascate != "" || this.card != "dash-card-add")actions.push({
-            icon: "delete",
-            tip: "Excluir",
+          });
+        }
+
+        if (this.cascate != "" || this.card != "dash-card-add") actions.push({
+          icon: "delete",
+          tip: "Excluir",
+          action: () => {
+            this.remove();
+          }
+        });
+        if (this.card != "dash-card-add") {
+          actions.push({
+            icon: "border_clear",
+            tip: "Recortar",
             action: () => {
-              this.remove();
+              this.cut();
             }
           });
-          if (this.card != "dash-card-add") {
-            actions.push({
-              icon: "swap_horiz",
-              tip: "Trocar cartão",
-              action: () => {
-                this.choices();
-              }
-            });
-            actions.push({
-              icon: "border_clear",
-              tip: "Recortar",
-              action: () => {
-                this.cut();
-              }
-            });
-            actions.push({
-              icon: "brush",
-              tip: "Editar",
-              action: () => {
-                this.edit();
-              }
-            });
-          }
-          return actions;
+          actions.push({
+            icon: "swap_horiz",
+            tip: "Trocar cartão",
+            action: () => {
+              this.choices();
+            }
+          });
+
+          actions.push({
+            icon: "brush",
+            tip: "Editar",
+            action: () => {
+              this.edit();
+            }
+          });
         }
+        return actions;
+
       }
     },
     data() {
@@ -147,6 +149,7 @@
                   this.$refs.card.setLayout(this.getSizerType());
                 }, 500);
                 this.$refs.card.refresh();
+                if (this.$refs.card.hasOwnProperty("onLoad")) this.$refs.card.onLoad();
               }
             }
             //else this.setConfig(null,true);
@@ -160,6 +163,7 @@
         if (this.card.indexOf('dash-card-add') > -1) {
           this.$parent.remove(this.card_slot);
         } else {
+          if (this.$refs.card.hasOwnProperty("onRemove")) this.$refs.card.onRemove();
           this.change("dash-card-add")
         }
         this.app.shows.popups.card_edit = false;
@@ -186,10 +190,11 @@
       },
       save: function (onload) {
         if (this.$refs.card.extras != null) {
-          $.each(this.$refs.card.extras, (attr, value) => {
-            this.app.addData(this.card_id, attr, value);
-          });
+          // $.each(this.$refs.card.extras, (attr, value) => {
+          //   this.app.addData(this.card_id, attr, value);
+          // });
         }
+        if (this.$refs.card.hasOwnProperty("onSave")) this.$refs.card.onSave();
         this.setConfig(this.$refs.card.data, onload);
 
       },
@@ -202,15 +207,15 @@
           data: cfg,
         }, this.card_slot, onload);
       },
-      start: function () {
+      onPageJoin: function () {
         setTimeout(() => {
           this.$refs.card.setLayout(this.getSizerType());
         }, 500);
 
-        this.$refs.card.start();
+        if (this.$refs.card.hasOwnProperty("onPageJoin")) this.$refs.card.onPageJoin();
       },
-      end: function () {
-        this.$refs.card.end();
+      onPageLeave: function () {
+        if (this.$refs.card.hasOwnProperty("onPageLeave")) this.$refs.card.onPageLeave();
       },
       cut: function () {
         this.app.models.current_card_cache.type = this.card;

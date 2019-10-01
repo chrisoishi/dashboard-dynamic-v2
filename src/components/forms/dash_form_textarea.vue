@@ -2,7 +2,7 @@
   <v-layout row wrap>
 
     <v-flex xs12>
-      <v-textarea :placeholder="name" :value='value.value' v-on:input="change($event,'value')"></v-textarea>
+      <v-textarea outlined :label="name" :value='value.value' v-on:input="change($event,'value')"></v-textarea>
     </v-flex>
 
     <v-flex xs12>

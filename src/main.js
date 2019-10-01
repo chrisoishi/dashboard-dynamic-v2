@@ -21,6 +21,7 @@ import dash_card_feed from "./components/cards/dash_card_feed";
 import dash_card_image from "./components/cards/dash_card_image";
 import dash_card_survey from "./components/cards/dash_card_survey";
 import dash_card_video from "./components/cards/dash_card_video";
+import dash_card_data from "./components/cards/dash_card_data";
 
 import dash_form_background from "./components/forms/dash_form_background";
 import dash_form_color from "./components/forms/dash_form_color";
@@ -54,6 +55,7 @@ Vue.component("dash-card-feed", dash_card_feed);
 Vue.component("dash-card-image", dash_card_image);
 Vue.component("dash-card-survey", dash_card_survey);
 Vue.component("dash-card-video", dash_card_video);
+Vue.component("dash-card-data", dash_card_data);
 
 Vue.component("dash-form-background", dash_form_background);
 Vue.component("dash-form-color", dash_form_color);

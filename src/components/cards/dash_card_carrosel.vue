@@ -1,12 +1,14 @@
 <template>
-          <v-card  width="100%" height="100%">
-            <slot name='edit'></slot>
-            <v-carousel  :interval='data.timer.size*1000' height="100%">
-                <v-carousel-item v-for="i in data.carrosel.size" :key="i" >
-                  <v-img :src="data.carrosel.items[i-1].value" max-height="100%" ></v-img>
-                </v-carousel-item>
-            </v-carousel>
-        </v-card>
+  <v-card width="100%" height="100%" style='position:relative;min-height:200px'>
+    <slot name='edit'></slot>
+    <v-carousel :interval='data.timer.size*1000' style='height:100%'>
+      <v-carousel-item v-for="i in data.carrosel.size" :key="i">
+        <div :style="'background-image: url('+data.carrosel.items[i-1].value+');'"
+          class="extra-background-cover">
+        </div>
+      </v-carousel-item>
+    </v-carousel>
+  </v-card>
 </template>
 
 <script>
@@ -46,6 +48,9 @@
         this.data.carrosel.size = new Number(this.data.carrosel.size) - 1;
       }
     },
-
+    methods:{
+      onSave(){},
+      onLoad(){}
+    },
   };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <v-text-field :label="name" :value="value.value" v-on:input="change($event)" :readonly='readonly2'></v-text-field>
+  <v-text-field outlined :label="value.name" :value="value.value" v-on:input="change($event)" :readonly='readonly2'></v-text-field>
 </template>
 
 <script>

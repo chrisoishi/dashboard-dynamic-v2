@@ -1,13 +1,13 @@
 <template>
   <v-card style="min-height:200px" width="100%" height="100%">
     <slot name='edit'></slot>
-    <template v-if="videoId!=''" >
+    <template v-if="videoId!=''">
       <div :id="'player-'+father.card_id"></div>
     </template>
     <template v-else>
       <v-container fill-height>
         <div style='width:100%' class='font-weight-bold text-sm-center'>
-          <v-btn color='red' dark  @click="edit('src')">Inserir URL do Video Youtube</v-btn>
+          <v-btn color='red' dark @click="edit('src')">Inserir URL do Video Youtube</v-btn>
         </div>
       </v-container>
     </template>
@@ -74,17 +74,19 @@
       onPlayerStateChange: function (event) {
         if (event.data == 0) this.player.seekTo(0);
       },
-      start: function () {
+      onPageJoin(){
         if (this.player != null) {
-
+          
           this.player.seekTo(0);
           this.player.playVideo();
 
         }
       },
-      end: function () {
+      onPageLeave: function () {
         if (this.player != null) this.player.pauseVideo();
-      }
+      },
+      onSave() {},
+      onLoad() {}
     },
     mounted() {
       this.create();

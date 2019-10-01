@@ -1,4 +1,5 @@
 import routes from "./routes";
+import fs from "../services/firebase_service";
 export default {
     data() {
         return {
@@ -8,7 +9,7 @@ export default {
             meta: {
                 name: "",
             },
-
+            templates: [],
             block_init_settings: false,
             saved_dashs: [],
             value_template: "",
@@ -34,20 +35,18 @@ export default {
             // })
         },
         template_load: function () {
-            if (this.value_template != '') {
-                var  __this = this;
-                // $.ajax({
-                //     url: routes.template.load + "/" + this.connection.id +
-                //         "-" +
-                //         this.value_template,
-                //     dataType: "JSON",
-                //     method: 'GET',
-                // }).done(function (response) {
-                //     __this.model_settings = false;
-                //     __this.updated_level = 0;
-
-                // });
-            }
+            fs.dashList((snapshot) => {
+                var dashs = [];
+                var data;
+                snapshot.forEach(function(doc) {
+                    data = doc.data();
+                    data["id"] = doc.id;
+                    dashs.push(data);
+                    
+                });
+                console.log(dashs);
+                this.templates = dashs;
+            });
         },
         template_edit: function () {
             if (this.value_template != '') {
@@ -93,6 +92,13 @@ export default {
                 }
             });
         },
-
+        create_template(){
+            fs.createDash().then((doc)=>{
+                var data = {}
+                console.log(doc);
+                data["id"] = doc.id;
+                this.templates.push(data);
+            })
+        }
     }
 }

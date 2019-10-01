@@ -45,12 +45,36 @@ const fs = class FirebaseService {
         });
     }
 
+    static async createSurvey(config){
+        var doc = await db.collection("surveys").doc().get();
+        await db.collection("surveys").doc(doc.id).set(config);
+        return doc;
+    }
+    static async saveSurvey(survey_id,config){
+        return await db.collection("surveys").doc(survey_id).update(config);
+    }
+    static async loadSurvey(survey_id){
+        return await db.collection("surveys").doc(survey_id).get();
+    }
+    static loadSurveySS(survey_id,action){
+        return db.collection("surveys").doc(survey_id).onSnapshot(action);
+    }
     static async dashSaveConfig(dash_id,config){
         return await db.collection("users").doc(this.getCurrentUser().uid).collection("dashboards").doc(dash_id).set(config);
     }
     static dashLoadConfig(dash_id,action){
         db.collection("users").doc(this.getCurrentUser().uid).collection("dashboards").doc(dash_id).onSnapshot(action);
     }
+
+    static dashList(action){
+        db.collection("users").doc(this.getCurrentUser().uid).collection("dashboards").onSnapshot(action);
+    }
+
+    static async createDash(){
+        var doc = await db.collection("users").doc(this.getCurrentUser().uid).collection("dashboards").doc().get();
+        await db.collection("users").doc(this.getCurrentUser().uid).collection("dashboards").doc(doc.id).set({title:"Nova Dash"});
+    }
+
 }
 fs.init = false;
 

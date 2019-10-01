@@ -7,16 +7,18 @@
 -->
 
 
-    <div :style='"max-height:100vh;height:100vh;width:"+width_dashboard' v-show='connection.status & dashboard.running'>
-      <div style='position:absolute;width:100%;' class=' font-weight-bold text-sm-center'>ID # {{connection.id}}
-      </div>
+    <div :style='"max-height:100vh;height:100vh;width:"+width_dashboard' v-show='connection.status'>
       <v-scroll-y-transition>
-        <v-toolbar text color="grey darken-4" dark absolute :width="width_dashboard" v-show='!dashboard.apresentation.active'>
-          <v-toolbar-title>{{title}}</v-toolbar-title>
+        <v-toolbar text color="grey darken-4" dark absolute :width="width_dashboard"
+          v-show='!dashboard.apresentation.active'>
+          <v-toolbar-title>{{title}} - {{configs.general.title}}</v-toolbar-title>
           <div class='flex-grow-1'></div>
           <v-toolbar-items>
-            <v-btn text color='white ' dark fab
-              @click='dashboard.pages.total++;dashboard.pages.current=dashboard.pages.total'>
+            <v-btn text color='white ' dark fab @click='configs.general.apresentation=!configs.general.apresentation'>
+              <v-icon v-if='configs.general.apresentation'>pause</v-icon>
+              <v-icon v-else>play_arrow</v-icon>
+            </v-btn>
+            <v-btn text color='white ' dark fab @click='dash_add()'>
               <v-icon>add</v-icon>
             </v-btn>
             <v-btn text color='white' dark fab @click='shows.popups.swap_dash=true'>
@@ -28,18 +30,39 @@
             <v-btn text color='white' dark fab @click='shows.popups.settings=true;'>
               <v-icon>settings</v-icon>
             </v-btn>
+            <v-btn text color='white' dark fab @click='connection.status=false'>
+              <v-icon>close</v-icon>
+            </v-btn>
 
 
           </v-toolbar-items>
         </v-toolbar>
       </v-scroll-y-transition>
       <v-container fluid fill-height grid-list-md>
-        <template v-for='i in dashboard.pages.total'>
-          <dash-layout-full v-show='i == dashboard.pages.current' :index='i' :preview='dashboard.apresentation.active'
-            v-on:save='configs_set($event)' ref="dash" :key='i' :style='"padding-top:"+margin_dashboard'>
+        <template v-for='i in configs.dashboards.length'>
+          <dash-layout-full v-show='i == configs.general.current_page' :index='i'
+            :preview='dashboard.apresentation.active' v-on:save='configs_set($event)' ref="dash" :key='i'
+            :style='"padding-top:"+margin_dashboard'>
           </dash-layout-full>
         </template>
       </v-container>
+
+      <v-footer height="50px" fixed :style="'background-color:transparent'">
+        <v-layout row wrap>
+          <v-flex xs12 text-xs-center>
+            <v-scale-transition>
+              <v-pagination v-model='configs.general.current_page' :length="configs.dashboards.length" circle
+                v-show='!dashboard.apresentation.active' next-icon="navigate_next" prev-icon="navigate_before">
+              </v-pagination>
+            </v-scale-transition>
+          </v-flex>
+        </v-layout>
+      </v-footer>
+
+      <v-btn large :color='apresentation_icon_color' dark fab bottom left fixed v-show='connection.is_edit'
+        @click='dashboard.apresentation.active=!dashboard.apresentation.active;'>
+        <v-icon>visibility</v-icon>
+      </v-btn>
     </div>
 
     <v-scroll-x-reverse-transition>
@@ -53,25 +76,36 @@
                 <v-icon color="red" v-on:click="shows.popups.card_edit = false">close</v-icon>
               </v-btn>
             </v-toolbar-items>
-
           </v-toolbar>
-          <v-container grid-list-xs style='margin-top:64px'>
-            <v-row row wrap width="100%">
-              <v-col cols="12">
-                <v-expansion-panels popout v-model='models.current_card_edit.item_opened'>
+          <v-row row wrap width="100%" style='margin-top:52px'>
+            <v-col cols="12">
+              <v-tabs v-model="models.current_card_edit.item_opened" center-active show-arrows next-icon="arrow_right"
+                prev-icon="arrow_left">
+                <v-tab v-for='(data,fieldName) in models.current_card_edit.data' :key='fieldName'>
+                  {{fieldName}}
+                </v-tab>
+              </v-tabs>
+              <v-divider></v-divider>
+              <v-tabs-items v-model="models.current_card_edit.item_opened">
+                <v-tab-item v-for='(data,fieldName) in models.current_card_edit.data' :key='fieldName'>
+                  <v-container grid-list-xs style='margin-top:64px'>
+                    <component :is='data.type' :name='data.name' :value='data'></component>
+                  </v-container>
+                </v-tab-item>
+              </v-tabs-items>
+              <!-- <v-expansion-panels accordion v-model='models.current_card_edit.item_opened'>
                   <v-expansion-panel v-for='(data,fieldName) in models.current_card_edit.data' :key='fieldName'>
-                    <v-expansion-panel-header v-html='data.name'></v-expansion-panel-header>
+                    <v-expansion-panel-header>{{data.name}}<template v-slot:actions>
+                        <v-icon color="primary">more</v-icon>
+                      </template></v-expansion-panel-header>
                     <v-expansion-panel-content>
-                      <v-container grid-list-xs>
-                        <component :is='data.type' :name='data.name' :value='data'></component>
-                      </v-container>
+
                     </v-expansion-panel-content>
                   </v-expansion-panel>
-                </v-expansion-panels>
+                </v-expansion-panels> -->
 
-              </v-col>
-            </v-row>
-          </v-container>
+            </v-col>
+          </v-row>
         </v-card>
       </div>
     </v-scroll-x-reverse-transition>
@@ -85,81 +119,49 @@
     ################################
 -->
     <div style='height:100%' v-show='!connection.status' class='mt-2'>
-      <v-fade-transition>
-        <v-container fluid fill-height grid-list-md>
-          <v-layout row wrap>
-            <v-flex d-flex xs12>
-              <v-card width="100%" style="background-image: url(https://picsum.photos/1920/1080/?random&blur)"
-                class="extra-background-cover">
-                <v-layout align-center row fill-height wrap>
-                  <v-flex xs12>
-                    <p class="text-sm-center display-4 white--text" style='text-shadow: 1px 1px grey'>
-                      Dashboard Dynamic
-                    </p>
-                  </v-flex>
-                  <v-flex xs12 md6>
-                    <p class="text-sm-center"><img :src="'?id='+connection.id+'&size=200x200'"></p>
-                  </v-flex>
-                  <v-flex xs12 md6>
-                    <p class='text-sm-center display-4 white--text' style='text-shadow: 1px 1px grey'>
-                      #{{connection.id}}</p>
-                    <p class='text-sm-center display-3 white--text'>
-                      <v-btn outlined color="white" dark width='100px'
-                        style='width:350px;height:70px;font-size:20pt;text-shadow: 1px 1px grey;shadow: 1px 1px grey'
-                        v-on:click='shows.popups.new_connection=true'>INICIAR</v-btn>
-                    </p>
-                  </v-flex>
-                </v-layout>
-              </v-card>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-fade-transition>
+      <v-row align="center" justify="center">
+        <v-col cols='5' class='d-flex align-center'>
+          <v-container grid-list-xs>
+            <v-card>
+              <v-toolbar color="grey darken-3" dark>
+                <v-toolbar-title style='width:100%' class='text-center'> Dashboards</v-toolbar-title>
+              </v-toolbar>
+              <v-row>
+                <v-col cols='12'>
+                  <v-list>
+                    <v-list-item v-for="(t,i) in templates" :key="i">
+                      <v-list-item-content @click="()=>{}">
+                        <v-list-item-title v-text="t.general.title" />
+                      </v-list-item-content>
+                      <div>
+                        <v-btn icon @click='conn_start(t.id,false)'>
+                          <v-icon>visibility</v-icon>
+                        </v-btn>
+                        <v-btn icon @click='conn_start(t.id,true)'>
+                          <v-icon>edit</v-icon>
+                        </v-btn>
+                        <!-- <v-btn icon>
+                          <v-icon>delete</v-icon>
+                        </v-btn> -->
+                      </div>
+                    </v-list-item>
+                  </v-list>
+                </v-col>
+                <v-col cols='12'>
+                  <v-container grid-list-xs>
+                    <v-btn outlined color="primary" dark width='100%' @click="create_template()">Iniciar nova dashboard
+                    </v-btn>
+                  </v-container>
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-container>
+
+        </v-col>
+      </v-row>
     </div>
 
 
-    <!--
-    ################################
-    TELA DE INICIO EDICAO
-    ################################
--->
-    <div style='height:100%' v-show='!dashboard.running & connection.status'>
-      <v-fade-transition>
-        <v-container fill-height grid-list-md>
-          <v-layout row wrap align-center>
-            <v-flex xs12>
-              <v-card>
-                <v-container grid-list-xs>
-                  <v-layout row wrap>
-                    <v-flex xs12>
-                      <div style='width:100%' class='text-sm-center display-3 font-weight-bold mb-3'>
-                        ESCOLHA UMA AÇÃO
-                      </div>
-                    </v-flex>
-                    <v-flex xs12 md6>
-                      <div style='width:100%' class='text-sm-center'>
-                        <v-btn outlined block large color="green"
-                          @click='configs_save();dashboard.running=true;conn_wait()'>
-                          <v-icon class='mr-2'>add_circle_outline</v-icon> Começar nova dashboard
-                        </v-btn>
-                      </div>
-
-                    </v-flex>
-                    <v-flex xs12 md6>
-                      <div style='width:100%' class='text-sm-center'>
-                        <v-btn outlined block large color="indigo" @click='dashboard.running=true;conn_wait()'>
-                          <v-icon class='mr-2'>play_circle_outline</v-icon> Continuar
-                        </v-btn>
-                      </div>
-                    </v-flex>
-                  </v-layout>
-                </v-container>
-              </v-card>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-fade-transition>
-    </div>
 
     <!--
     ################################
@@ -278,73 +280,34 @@
             </v-flex>
             <v-flex xs12>
               <v-expansion-panels>
-                <v-expansion-panel popout>
-                  <v-expansion-panel-header>Templates</v-expansion-panel-header>
+                <v-expansion-panel>
+                  <v-expansion-panel-header>Título</v-expansion-panel-header>
                   <v-expansion-panel-content>
                     <v-container grid-list-xs>
                       <v-layout row wrap>
                         <v-flex xs12>
-                          <v-select :items="saved_dashs" v-model="value_template" label="Escolha o template"></v-select>
+                          <v-text-field outlined v-model="configs.general.title"></v-text-field>
                         </v-flex>
-                        <v-flex xs12 class='text-xs-right'>
-                          <v-btn outlined color="blue" dark v-on:click='template_load()'>Carregar</v-btn>
-                          <v-btn outlined color="orange" dark v-on:click='template_edit()'>Editar</v-btn>
-                        </v-flex>
-                        <v-flex xs12>
-                          <v-divider></v-divider>
-                          <p class='mt-3 mb-5'>Template atual</p>
-                          <v-text-field label="Nome do template" v-model='meta.name'>
-                          </v-text-field>
-                        </v-flex>
-                        <v-flex xs12 class='text-xs-right'>
-                          <v-btn outlined color="red" dark
-                            @click="deleteTemplate();model_settings = false;notify('Deleted!')" v-if='editing_template'>
-                            Deletar</v-btn>
-                          <v-btn outlined color="orange" dark
-                            @click="template_save(true);model_settings = false;notify('Saved!')"
-                            v-if='editing_template'>
-                            Atualizar</v-btn>
-                          <v-btn outlined color="blue" dark
-                            @click="template_save(false);model_settings = false;notify('Saved!')">Salvar
-                            como novo</v-btn>
-                        </v-flex>
-
                       </v-layout>
 
                     </v-container>
                   </v-expansion-panel-content>
                 </v-expansion-panel>
-
-                <v-expansion-panel popout>
+                <v-expansion-panel>
                   <v-expansion-panel-header>Tempo de troca de tela (segundos)</v-expansion-panel-header>
                   <v-expansion-panel-content>
                     <v-container grid-list-xs>
                       <v-layout row wrap>
                         <v-flex xs12>
-                          <v-slider small v-model='configs.settings.apresentation_time' max='100' thumb-label="always"
+                          <v-slider small v-model='configs.general.apresentation_time' max='100' thumb-label="always"
                             thumb-size='25px'></v-slider>
                         </v-flex>
                       </v-layout>
 
                     </v-container>
                   </v-expansion-panel-content>
-
-
                 </v-expansion-panel>
 
-                <v-expansion-panel popout>
-                  <v-expansion-panel-header>Sincronizar com outra dash</v-expansion-panel-header>
-                  <v-expansion-panel-content>
-                    <v-container grid-list-xs>
-                      <v-layout row wrap>
-                        <v-flex xs12>
-                          <v-text-field label="DASH ID" v-model="configs.settings.sync" prefix="#"></v-text-field>
-                        </v-flex>
-                      </v-layout>
-
-                    </v-container>
-                  </v-expansion-panel-content>
-                </v-expansion-panel>
               </v-expansion-panels>
             </v-flex>
           </v-layout>
@@ -446,22 +409,9 @@
     </v-snackbar>
 
 
-    <v-btn large :color='apresentation_icon_color' dark fab bottom left fixed
-      @click='dashboard.apresentation.active=!dashboard.apresentation.active;save();'>
-      <v-icon>visibility</v-icon>
-    </v-btn>
 
-    <v-footer height="50px" fixed :style="'background-color:transparent'">
-      <v-layout row wrap>
-        <v-flex xs12 text-xs-center>
-          <v-scale-transition>
-            <v-pagination v-model='dashboard.pages.current' :length="dashboard.pages.total" circle
-              v-show='!dashboard.apresentation.active & dashboard.running' next-icon="navigate_next"
-              prev-icon="navigate_before"></v-pagination>
-          </v-scale-transition>
-        </v-flex>
-      </v-layout>
-    </v-footer>
+
+
 
   </v-app>
 </template>
@@ -484,7 +434,7 @@
     mixins: [mix_connection, mix_template, mix_dashboard, mix_configs],
     data() {
       return {
-        title:"DynaDash",
+        title: "DynaDash",
         shows: {
           popups: {
             card_add: false,
@@ -572,12 +522,13 @@
         this.configs.data_card['id_' + card_id][attr] = value;
       },
       init() {
-        this.conn_wait();
-        this.template_get();
-        this.template_get_meta();
+        // this.conn_wait();
+        // this.template_get();
+        // this.template_get_meta();
+        this.template_load();
         $(document).keydown((event) => {
           if (event.which == 27) {
-            if(this.shows.popups.card_edit)this.shows.popups.card_edit=false;
+            if (this.shows.popups.card_edit) this.shows.popups.card_edit = false;
             else this.dashboard.apresentation.active = !this.dashboard.apresentation.active;
           }
         });
@@ -589,7 +540,7 @@
     },
     mounted() {
       this.init();
-      
+
     }
   };
 </script>

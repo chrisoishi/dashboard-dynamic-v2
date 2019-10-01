@@ -1,10 +1,11 @@
+import fs from "../services/firebase_service";
 export default {
     data() {
         return {
             dashboard: {
                 running: false,
                 apresentation: {
-                    active: true,
+                    active: false,
                     time: 1000,
                     timeout: null
                 },
@@ -18,32 +19,36 @@ export default {
         }
     },
     watch: {
-        "dashboard.apresentation.active": function (newV) {
-            this.dash_start_apresentation();
-            this.shows.popups.card_edit_bottom=false;
-        },
-        "dashboard.pages.current": function (newV, oldV) {
-            if (!this.dashboard.apresentation.active) {
-                if (newV != oldV) this.configs_save();
+        "configs.general.apresentation"(v) {
+            if (v) {
+                this.dash_start_apresentation();
+            } else {
+                clearTimeout(this.dashboard.apresentation.timeout);
             }
-            this.$refs.dash[newV - 1].start();
-            this.$refs.dash[oldV - 1].end();
-            this.shows.popups.card_edit_bottom=false;
         },
-        "dashboard.pages.total": function(){
-            this.shows.popups.card_edit_bottom=false;
+        "dashboard.apresentation.active": function (newV) {
+            if (newV) {
+
+                this.shows.popups.card_edit_bottom = false;
+                this.shows.popups.card_edit = false;
+            }
+
+        },
+        "dashboard.pages.total": function () {
+            this.shows.popups.card_edit_bottom = false;
         }
     },
     methods: {
         dash_start_apresentation: function () {
             clearTimeout(this.dashboard.apresentation.timeout);
             if (this.dashboard.apresentation.active) {
-                if (this.dashboard.pages.current > this.dashboard.pages.total) this.dashboard.pages.current = 1;
-                this.dashboard.apresentation.timeout = setTimeout(() => {
-                    this.dashboard.pages.current++;
-                    this.dash_start_apresentation()
-                }, this.configs.settings.apresentation_time * 1000);
+                this.configs.general.current_page++;
+                if (this.configs.general.current_page > this.configs.dashboards.length) this.configs.general.current_page = 1;
             }
+            this.dashboard.apresentation.timeout = setTimeout(() => {
+                this.dash_start_apresentation()
+            }, this.configs.general.apresentation_time * 1000);
+
         },
         dash_refresh: function () {
             this.configs_load();
@@ -96,16 +101,15 @@ export default {
         dash_clear: function () {
             this.$refs.dash[this.dashboard.pages.current - 1].$refs.card1.remove();
         },
+        dash_add: function () {
+            this.configs.dashboards.push({});
+            this.configs.general.current_page = this.configs.dashboards.length;
+        },
         dash_delete: function (index) {
-            if (this.dashboard.pages.total > 1) {
-                for (var i = index; i < this.dashboard.pages.total; i++) {
-                    this.configs.dashboards["dash" + i] = this.configs.dashboards["dash" + (i + 1)];
-                }
-                delete this.configs.dashboards["dash" + this.dashboard.pages.total];
-                this.configs_sync();
 
-                this.dashboard.pages.total--;
-                if (this.dashboard.pages.current > this.dashboard.pages.total) this.dashboard.pages.current = this.dashboard.pages.total;
+            if (this.configs.dashboards.length > 1) {
+                this.configs.dashboards.splice(index - 1, 1);
+                this.configs.general.current_page--;
             } else this.dash_clear();
 
             this.configs_save();
@@ -118,18 +122,22 @@ export default {
             var x = event.clientX; // Get the horizontal coordinate
             var y = event.clientY;
             this.shows.popups.card_edit_bottom = false;
-            this.models.current_card_edit.position.top=false;
-            this.models.current_card_edit.position.bottom=false;
-            this.models.current_card_edit.position.right=false;
-            this.models.current_card_edit.position.left=false;
-            if(x/window.innerWidth>0.5)this.models.current_card_edit.position.left=true;
-            else this.models.current_card_edit.position.right=true;
-            if(y/window.innerHeight>0.5)this.models.current_card_edit.position.top=true;
-            else this.models.current_card_edit.position.bottom=true;
+            this.models.current_card_edit.position.top = false;
+            this.models.current_card_edit.position.bottom = false;
+            this.models.current_card_edit.position.right = false;
+            this.models.current_card_edit.position.left = false;
+            if (x / window.innerWidth > 0.5) this.models.current_card_edit.position.left = true;
+            else this.models.current_card_edit.position.right = true;
+            if (y / window.innerHeight > 0.5) this.models.current_card_edit.position.top = true;
+            else this.models.current_card_edit.position.bottom = true;
 
 
-            setTimeout(()=>{this.shows.popups.card_edit_bottom = true},50);
+            setTimeout(() => {
+                this.shows.popups.card_edit_bottom = true
+            }, 50);
             this.models.current_card_edit.field = field;
-        }
+        },
+
+        
     }
 }

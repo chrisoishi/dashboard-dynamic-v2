@@ -22,7 +22,7 @@ export default {
         },
         methods: {
             remove(card) {
-                if (this[card].indexOf('dash-card') > -1) this[card+"_deleted"] = true;
+                if (this[card].indexOf('dash-card') > -1) this[card + "_deleted"] = true;
                 else this[card] = "dash-card";
                 this.empty();
             },
@@ -46,13 +46,13 @@ export default {
                 this.config[card] = cfg;
                 this.father.setConfig(this.config, onload);
             },
-            start() {
-                this.$refs.card1.start();
-                this.$refs.card2.start();
+            onPageJoin: function () {
+                this.$refs.card1.onPageJoin();
+                this.$refs.card2.onPageJoin();
             },
-            end() {
-                this.$refs.card1.end();
-                this.$refs.card2.end();
+            onPageLeave: function () {
+                this.$refs.card1.onPageLeave();
+                this.$refs.card2.onPageLeave();
             },
             load(cfg) {
                 if (cfg != null && cfg != "undefined") {
@@ -74,8 +74,12 @@ export default {
             father: Object,
         },
         methods: {
-            setLayout(sizer) {return sizer;},
-            edit(attr){this.$parent.edit(attr);},
+            setLayout(sizer) {
+                return sizer;
+            },
+            edit(attr) {
+                this.$parent.edit(attr);
+            },
             start() {},
             end() {},
             refresh() {}

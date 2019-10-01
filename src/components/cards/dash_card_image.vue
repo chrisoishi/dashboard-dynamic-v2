@@ -1,13 +1,14 @@
 <template>
-  <v-card :style="'background-image: url('+data.background.value+');min-height:200px'" class="extra-background-cover" width="100%" >
+  <v-card :style="'background-image: url('+data.background.value+');min-height:200px'" class="extra-background-cover"
+    width="100%">
     <slot name='edit'></slot>
     <div class='extra-background-card'
-      :style="'background-color:'+data.background.color+';opacity:'+data.background.opacity/100" ></div>
+      :style="'background-color:'+data.background.color+';opacity:'+data.background.opacity/100"></div>
     <div style='position:absolute;width:100%;height:100%;' @click='edit("background")'>
       <v-container fill-height style='z-index:2'>
         <v-layout row wrap fill-height>
           <v-flex d-flex xs12 style='height:50%'>
-            <dash-text :data='data.title' ref='title' :onclick='function(){edit("title");}' ></dash-text>
+            <dash-text :data='data.title' ref='title' :onclick='function(){edit("title");}'></dash-text>
           </v-flex>
           <v-flex d-flex xs12 style='height:50%'>
             <dash-text :data='data.text' ref='text' :onclick='function(){edit("text");}'></dash-text>
@@ -63,8 +64,11 @@
           this.$refs.title.resize();
           this.$refs.text.resize();
         });
-      }
+      },
+      onSave() {},
+      onLoad() {}
     },
+
     mounted: function () {
       this.data.background.value += Math.floor((Math.random() * 100) + 1);
     }
