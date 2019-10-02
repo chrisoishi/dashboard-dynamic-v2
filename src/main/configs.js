@@ -28,6 +28,9 @@ export default {
         }
     },
     watch: {
+        "configs.general.apresentation"(){
+            this.configs_save();
+        },
         "configs.general.current_page"(newV, oldV) {
             this.configs_save();
             this.$refs.dash[newV - 1].onPageJoin();
