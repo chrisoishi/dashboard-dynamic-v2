@@ -11,17 +11,20 @@
                             <v-form ref='form'>
                                 <v-row>
                                     <v-col cols='12'>
-                                        <v-text-field :label="email_text" v-model='email' :rules="[form.rules.empty]">
+                                        <v-text-field  :label="email_text" v-model='email' :rules="[form.rules.empty]">
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols='12'>
-                                        <v-text-field :label="password_text" v-model='password' type='password'
+                                        <v-text-field  :label="password_text" v-model='password' type='password'
                                             :rules="[form.rules.empty]"></v-text-field>
                                     </v-col>
                                     <v-col cols='12'>
-                                        <v-btn width="100%" @click='login()'>
+                                        <v-btn color='primary' outlined width="100%" @click='login()'>
                                             Login
                                         </v-btn>
+                                    </v-col>
+                                    <v-col cols='12' class='text-center'>
+                                        <a href="#" @click='$router.replace("/register")'>Criar uma conta</a>
                                     </v-col>
                                 </v-row>
                             </v-form>
@@ -56,18 +59,16 @@
         },
         methods: {
             login() {
-
                 if (this.$refs.form.validate()) {
                     this.$root.app.loading.set(true);
                     fs.auth(this.email, this.password).then((m) => {
-                        this.$router.push('/');
+                        this.$router.replace('/');
                         this.$root.app.loading.set(false);
                     }).catch((m) => {
                         this.$root.app.alert.set(m);
                         this.$root.app.loading.set(false);
                     });
-                } else {
-                }
+                } else {}
             }
 
         },

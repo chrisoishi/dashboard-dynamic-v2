@@ -1,8 +1,10 @@
 <template>
   <v-app>
-    <router-view ref='router'></router-view>
-    <c-loading ref='loading'></c-loading>
-    <c-alert ref='alert'></c-alert>
+    <router-view ref='router'/>
+    <c-loading ref='loading'/>
+    <c-confirm ref='confirm' />
+    <c-alert ref='alert'/>
+    
   </v-app>
 </template>
 
@@ -12,7 +14,8 @@
     data(){
       return{
         loading:null,
-        alert:null
+        alert:null,
+        confirm:null,
       }
     },
     computed:{
@@ -21,6 +24,7 @@
     mounted() {
       this.loading = this.$refs.loading;
       this.alert = this.$refs.alert;
+      this.confirm = this.$refs.confirm;
     },
   }
 </script>

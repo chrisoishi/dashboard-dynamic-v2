@@ -66,6 +66,12 @@ export default {
                     rotate: "0",
                     icon: "play_arrow"
                 },
+                {
+                    layout: 'dash-card-iframe',
+                    content: 'Página da Web',
+                    rotate: "0",
+                    icon: "language"
+                },
             ]
         }, ]
     }

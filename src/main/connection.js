@@ -62,12 +62,21 @@ export default {
             this.configs_load();
         },
         conn_stop() {
-            this.configs_save(false);
-            this.connection.id = "";
-            this.connection.is_edit=false;
-            this.configs = Object.assign({}, this.configs_init);
-            if (this.connection.snapshot != null)this.connection.snapshot();
-            this.onConnectionStop();
+            this.$root.app.confirm.set(true,{
+                title:"Sair",
+                text:"Deseja sair dessa dashboard?",
+                ok:"Sair e salvar",
+                cancel:"Ficar",
+                onOk:()=>{
+                    this.configs_save(false);
+                    this.connection.id = "";
+                    this.connection.is_edit=false;
+                    this.configs = Object.assign({}, this.configs_init);
+                    if (this.connection.snapshot != null)this.connection.snapshot();
+                    this.onConnectionStop();
+                }
+            });
+
         }
     }
 }

@@ -6,11 +6,18 @@
                     <v-card>
                         <v-toolbar color="grey darken-3" dark>
                             <v-toolbar-title style='width:100%' class='text-center'> Dashboards</v-toolbar-title>
+
+                            <div style='position:absolute;right:20px'>
+                                <v-btn icon @click="logout">
+                                    <v-icon>close</v-icon>
+                                </v-btn>
+                            </div>
+
                         </v-toolbar>
                         <v-row>
                             <template v-if="user != null">
                                 <v-col cols='12'>
-                                    <v-list>
+                                    <v-list v-if="user.names.length > 0">
                                         <v-list-item v-for="(name,i) in user.names" :key="i">
                                             <v-list-item-content @click="()=>{}">
                                                 <v-list-item-title v-text="name" />
@@ -29,6 +36,7 @@
                                             </div>
                                         </v-list-item>
                                     </v-list>
+                                    <v-container style='width:100%' class='text-center' v-else>Nenhuma  dashboard foi criada.</v-container>
                                 </v-col>
                                 <v-col cols='12'>
                                     <v-container grid-list-xs>
@@ -49,7 +57,8 @@
 
             </v-col>
         </v-row>
-        <Dashboard ref="dash" v-if="dash_active" :onConnectionStop="stop" :dashboard_id="dashboard_id" :dashboard_mode_edit="dashboard_mode_edit"/>
+        <Dashboard ref="dash" v-if="dash_active" :onConnectionStop="stop" :dashboard_id="dashboard_id"
+            :dashboard_mode_edit="dashboard_mode_edit" />
     </div>
 </template>
 
@@ -62,8 +71,8 @@
         },
         data() {
             return {
-                dashboard_id:"",
-                dashboard_mode_edit:false,
+                dashboard_id: "",
+                dashboard_mode_edit: false,
                 dash_active: false,
                 user: null,
                 snapshot: null
@@ -96,12 +105,21 @@
                 });
             },
             remove(id) {
-                this.$root.app.loading.set(true);
-                fs.dashboard_delete(id).then((doc) => {
-                    this.load();
-                }).catch(e => {
-                    console.log(e);
-                })
+                this.$root.app.confirm.set(true, {
+                    title: "Remover Dashboard",
+                    text: "Deseja mesmo remover essa Dashboard? Todas as informações serão removidas e não poderão ser recuperadas.",
+                    ok:"Não, cliquei errado",
+                    cancel:"Sim, quero remover",
+                    onCancel: () => {
+                        this.$root.app.loading.set(true);
+                        fs.dashboard_delete(id).then((doc) => {
+                            this.load();
+                        }).catch(e => {
+                            console.log(e);
+                        })
+                    }
+                });
+
             },
             start(id, edit_mode) {
                 this.dash_active = true;
@@ -112,6 +130,18 @@
             stop() {
                 this.dash_active = false;
                 this.load();
+            },
+            logout() {
+                this.$root.app.confirm.set(true, {
+                    title: "Sair",
+                    text: "Deseja mesmo sair da sua conta?",
+                    onOk: () => {
+                        this.$root.app.loading.set(true, "Saindo");
+                        fs.logout().then(() => {
+                            document.location.reload(true);
+                        });
+                    }
+                });
             }
         },
         mounted() {

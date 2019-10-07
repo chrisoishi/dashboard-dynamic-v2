@@ -7,7 +7,7 @@ export default {
                 general: {
                     title: "",
                     apresentation: false,
-                    apresentation_time: 10,
+                    apresentation_time: [10],
                     current_page: 1,
                 },
                 dashboards: [],
@@ -47,7 +47,7 @@ export default {
                 this.is_ready_save = false;
                 var response = snapshot.data();
                 if (response.hasOwnProperty("dashboards")) this.configs.dashboards = response.dashboards;
-                if (response.hasOwnProperty("general")) this.configs.general = response.general;
+                if (response.hasOwnProperty("general")) this.configs.general = Object.assign(this.configs.general,response.general);
                 if (this.configs.dashboards.length == 0) {
                     this.configs.dashboards.push(null);
                     this.configs.general.current_page = 1;

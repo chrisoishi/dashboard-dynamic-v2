@@ -23,6 +23,9 @@ const fs = class FirebaseService {
             data: data
         });
     }
+    static async logout(){
+        await firebase.auth().signOut();
+    }
     static async register(email, password, name) {
         var r = await firebase.auth().createUserWithEmailAndPassword(email, password);
         await db.collection("users").doc(r.user.uid).set({

@@ -34,6 +34,7 @@ import dash_form_textarea from "./components/forms/dash_form_textarea";
 
 import comp_loading from "./components/helpers/loading";
 import comp_alert from "./components/helpers/alert";
+import comp_confirm from "./components/helpers/confirm";
 
 import swatches from "vue-swatches";
 import "vue-swatches/dist/vue-swatches.min.css"
@@ -56,6 +57,7 @@ Vue.component("dash-card-image", dash_card_image);
 Vue.component("dash-card-survey", dash_card_survey);
 Vue.component("dash-card-video", dash_card_video);
 Vue.component("dash-card-data", dash_card_data);
+Vue.component("dash-card-iframe", ()=>import("./components/cards/dash_card_iframe"));
 
 Vue.component("dash-form-background", dash_form_background);
 Vue.component("dash-form-color", dash_form_color);
@@ -72,6 +74,7 @@ Vue.component("swatches", swatches);
 
 Vue.component("c-loading", comp_loading);
 Vue.component("c-alert", comp_alert);
+Vue.component("c-confirm",comp_confirm);
 
 
 new Vue({

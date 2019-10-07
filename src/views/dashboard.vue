@@ -4,20 +4,22 @@
       <v-scroll-y-transition>
         <v-toolbar text color="grey darken-4" dark absolute :width="width_dashboard"
           v-show='!dashboard.apresentation.active'>
-          <v-toolbar-title>{{title}} - {{configs.general.title}}</v-toolbar-title>
+          <v-toolbar-title>{{configs.general.title}}</v-toolbar-title>
           <div class='flex-grow-1'></div>
           <v-toolbar-items>
-            <icon-tooltip v-if='is_need_save' icon="save" tip="Salvar alterações"  @click='configs_save(false)' />
-            
-            <icon-tooltip  :icon="configs.general.apresentation?'pause':'play_arrow'" :tip="configs.general.apresentation?'Desabilitar apresentação':'Habilitar apresentação'"  @click='configs.general.apresentation=!configs.general.apresentation' />
-            <icon-tooltip  icon="add" tip="Adicionar nova tela"  @click='dash_add()' />
-            <icon-tooltip  icon="arrow_back" tip="Mover tela para esquerda"  @click='dash_change_order("LEFT")' />
-            <icon-tooltip  icon="arrow_forward" tip="Mover tela para direita"  @click='dash_change_order("RIGHT")' />
- 
+            <icon-tooltip v-if='is_need_save' icon="save" tip="Salvar alterações" @click='configs_save(false)' />
 
-            <icon-tooltip  icon="delete" tip="Limpar tela atual"  @click='dash_delete(dashboard.pages.current)' />
-            <icon-tooltip  icon="settings" tip="Configurações"  @click='shows.popups.settings=true' />
-            <icon-tooltip  icon="close" tip="Fechar dashboard"  @click='conn_stop()' />
+            <icon-tooltip :icon="configs.general.apresentation?'pause':'play_arrow'"
+              :tip="configs.general.apresentation?'Desabilitar apresentação':'Habilitar apresentação'"
+              @click='configs.general.apresentation=!configs.general.apresentation' />
+            <icon-tooltip icon="add" tip="Adicionar nova tela" @click='dash_add()' />
+            <icon-tooltip icon="arrow_back" tip="Mover tela para esquerda" @click='dash_change_order("LEFT")' />
+            <icon-tooltip icon="arrow_forward" tip="Mover tela para direita" @click='dash_change_order("RIGHT")' />
+
+
+            <icon-tooltip icon="delete" tip="Excluir tela atual" @click='dash_delete(dashboard.pages.current)' />
+            <icon-tooltip icon="settings" tip="Configurações" @click='shows.popups.settings=true' />
+            <icon-tooltip icon="close" tip="Sair" @click='conn_stop()' />
 
           </v-toolbar-items>
         </v-toolbar>
@@ -58,47 +60,6 @@
     POPUPS
     ################################
 -->
-    <!--
-    ################################
-    ADICIONAR CARTAO
-    ################################
--->
-    <v-dialog v-model="shows.popups.card_add" scrollable :overlay="false" max-width="500px"
-      transition="dialog-transition">
-      <v-card>
-        <v-toolbar color="secondary" dark tabs>
-          <div class='text-sm-center' style='width:100%'>
-            <h1>Adicionar cartões</h1>
-          </div>
-          <v-tabs slot="extension" v-model='models.tabs_cards.current' color="white" dark slider-color="secondary"
-            centered>
-            <v-tab v-for='(tab,i) in models.tabs_cards.tabs' :key='i'>{{tab.text}}</v-tab>
-            <v-tabs-slider></v-tabs-slider>
-          </v-tabs>
-        </v-toolbar>
-        <v-container grid-list-xs style='height:300px'>
-          <v-tabs-items v-model='models.tabs_cards.current'>
-            <v-tab-item v-for='(tab,i) in models.tabs_cards.tabs' :key='i'>
-              <v-layout row wrap>
-                <v-flex xs12 v-for='(item,i) in tab.cards' :key='i'>
-                  <v-btn color="success" v-on:click='models.current_card_change.change(item.layout)' style='width:100%'
-                    class='ma-1'>
-                    {{item.content}}</v-btn>
-                </v-flex>
-              </v-layout>
-
-            </v-tab-item>
-          </v-tabs-items>
-        </v-container>
-        <v-divider></v-divider>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="red" text v-on:click="shows.popups.card_add=false">
-            Fechar
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
 
 
 
@@ -136,9 +97,9 @@
                   <v-expansion-panel-content>
                     <v-container grid-list-xs>
                       <v-layout row wrap>
-                        <v-flex xs12>
-                          <v-slider small v-model='configs.general.apresentation_time' max='100' thumb-label="always"
-                            thumb-size='25px'></v-slider>
+                        <v-flex xs12 v-for='(dash,i) in configs.dashboards' :key='i'>
+                          <v-slider small v-if='dash!=null' v-model='dash.general.apresentation_time' max='100'
+                            thumb-label="always" thumb-size='25px'></v-slider>
                         </v-flex>
                       </v-layout>
 
@@ -152,7 +113,7 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green" dark v-on:click="configs_save();shows.popups.settings = false;notify('Saved!')">
+          <v-btn color="green" dark v-on:click="configs_save();shows.popups.settings = false;">
             Salvar
           </v-btn>
 

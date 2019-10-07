@@ -18,8 +18,12 @@
     },
     data(){
       return {
+              general:{
+                apresentation_time:10
+              },
               id:"",
-              card1: 'dash-card-add'
+              card1: 'dash-card-add',
+              
       }
     },
     methods: {
@@ -36,6 +40,7 @@
         }
       },
       setConfig: function (cfg, card, onload) {
+        cfg.general = this.general;
         this.$emit('save', {
           dash: this.index,
           cfg: cfg,

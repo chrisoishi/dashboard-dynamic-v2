@@ -66,7 +66,7 @@ export default {
             }
             this.dashboard.apresentation.timeout = setTimeout(() => {
                 this.dash_start_apresentation()
-            }, this.configs.general.apresentation_time * 1000);
+            }, this.configs.dashboards[this.configs.general.current_page-1].general.apresentation_time * 1000);
 
         },
         dash_refresh: function () {
