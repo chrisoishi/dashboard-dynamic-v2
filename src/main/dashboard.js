@@ -15,8 +15,20 @@ export default {
                 },
                 refresh_rate: 3000,
             },
+            current_card_edit: {
+                item_opened: "",
+                data: null,
+                tabs: [],
+                object: null
+            },
+            is_card_editing: false
 
         }
+    },
+    computed: {
+        width_dashboard() {
+            return this.is_card_editing ? "70vw" : "100vw";
+        },
     },
     watch: {
         "configs.general.apresentation"(v) {
@@ -36,7 +48,14 @@ export default {
         },
         "dashboard.pages.total": function () {
             this.shows.popups.card_edit_bottom = false;
-        }
+        },
+        "is_card_editing": function () {
+            if (!this.is_card_editing && this.current_card_edit.object != null) {
+                this.current_card_edit.object.save(false);
+                this.current_card_edit.object.is_editing = false;
+            }
+
+        },
     },
     methods: {
         dash_start_apresentation: function () {
@@ -71,29 +90,29 @@ export default {
                 }, 1000);
             }
         },
-        dash_change_order: function (direction) {
+        dash_change_order(direction) {
+            var current_page = this.configs.general.current_page-1;
             switch (direction) {
                 case "LEFT":
-                    if (this.dashboard.pages.current > 1) {
-                        var next = parseInt(this.dashboard.pages.current) - 1;
-                        var copy = this.configs.dashboards['dash' + next];
-                        this.configs.dashboards['dash' + next] = this.configs.dashboards['dash' + this.dashboard.pages.current];
-                        this.configs.dashboards['dash' + this.dashboard.pages.current] = copy;
-
-                        this.dashboard.pages.current--;
+                    if (current_page > 0) {
+                        var dash = Object.assign({},this.configs.dashboards[current_page]);
+                        this.configs.dashboards.splice(current_page,1);
+                        this.configs.dashboards.splice(current_page-1,0,dash);
                         this.configs_sync();
-                        this.configs_save();
+                        this.$nextTick(()=>{
+                            this.configs.general.current_page--;
+                        });
                     }
                     break;
                 case "RIGHT":
-                    if (this.dashboard.pages.current < this.dashboard.pages.total) {
-                        var next = parseInt(this.dashboard.pages.current) + 1;
-                        var copy = this.configs.dashboards['dash' + next];
-                        this.configs.dashboards['dash' + next] = this.configs.dashboards['dash' + this.dashboard.pages.current];
-                        this.configs.dashboards['dash' + this.dashboard.pages.current] = copy;
-                        this.dashboard.pages.current++;
+                    if (current_page < this.configs.dashboards.length-1) {
+                        var dash = Object.assign({},this.configs.dashboards[current_page]);
+                        this.configs.dashboards.splice(current_page,1);
+                        this.configs.dashboards.splice(current_page+1,0,dash);
                         this.configs_sync();
-                        this.configs_save();
+                        this.$nextTick(()=>{
+                            this.configs.general.current_page++;
+                        });
                     }
                     break;
             }
@@ -102,16 +121,20 @@ export default {
             this.$refs.dash[this.dashboard.pages.current - 1].$refs.card1.remove();
         },
         dash_add: function () {
-            this.configs.dashboards.push({});
-            this.configs.general.current_page = this.configs.dashboards.length;
+            this.configs.dashboards.splice(this.configs.general.current_page,0,null);
+            this.$nextTick(()=>{
+                this.configs_sync();
+                this.configs.general.current_page++;
+            });
+            
         },
         dash_delete: function (index) {
-
             if (this.configs.dashboards.length > 1) {
-                this.configs.dashboards.splice(index - 1, 1);
+                this.configs.dashboards.splice(index, 1);
                 this.configs.general.current_page--;
             } else this.dash_clear();
-
+            console.log(this.configs.dashboards);
+            this.configs_sync();
             this.configs_save();
 
         },
@@ -137,7 +160,15 @@ export default {
             }, 50);
             this.models.current_card_edit.field = field;
         },
+        dash_edit_card(card, item_opened) {
+            if (this.current_card_edit.object != null) this.current_card_edit.object.is_editing = false;
+            this.current_card_edit.item_opened = item_opened;
+            this.current_card_edit.tabs = card.$refs.card.tabs;
+            this.current_card_edit.data = card.$refs.card.data;
+            this.current_card_edit.object = card;
+            this.is_card_editing = true;
+            this.$refs.card_edit.onOpen();
+        }
 
-        
     }
 }

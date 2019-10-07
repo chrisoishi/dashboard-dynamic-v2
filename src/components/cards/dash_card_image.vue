@@ -54,6 +54,19 @@
 
           },
         },
+        tabs: [{
+            name: "Geral",
+            attrs: ["background"]
+          },
+          {
+            name: "Título",
+            attrs: ["title"]
+          },
+          {
+            name: "Subtítulo",
+            attrs: ["text"]
+          }
+        ],
         show_text: false,
       }
     },

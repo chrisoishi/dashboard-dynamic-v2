@@ -11,13 +11,14 @@
   export default {
     props: {
       index: null,
-
+      config: Object,
       preview: Boolean,
       config: Object,
 
     },
     data(){
       return {
+              id:"",
               card1: 'dash-card-add'
       }
     },
@@ -36,7 +37,7 @@
       },
       setConfig: function (cfg, card, onload) {
         this.$emit('save', {
-          dash: this.index-1,
+          dash: this.index,
           cfg: cfg,
           onload: onload
         });
@@ -47,13 +48,16 @@
       onPageLeave: function () {
         this.$refs.card1.onPageLeave();
       },
-      load(cfg) {
-        if (cfg != null & cfg != "undefined") {
-          this.$refs.card1.load(cfg);
+      load(config) {
+        if (config != null & config != "undefined") {
+          this.$refs.card1.load(config);
         } else {
-          this.card1 = 'dash-card-add';
+          this.$refs.card1.load(null);
         }
       },
+    },
+    mounted(){
+      this.load(this.config);
     }
   };
 </script>

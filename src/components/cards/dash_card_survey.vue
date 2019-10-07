@@ -3,8 +3,8 @@
     height="100%" width="100%">
     <slot name='edit'></slot>
     <div class='extra-background-card'
-      :style="'background-color:'+data.background.color+';opacity:'+data.background.opacity/100"></div>
-    <div style='position:absolute;width:100%;height:100%'>
+      :style="'background-color:'+data.background.color+';opacity:'+data.background.opacity/100" ></div>
+    <div style='position:absolute;width:100%;height:100%' @click='edit("background")'>
       <v-row style="height:100%;width:100%">
         <v-col cols='12'>
           <dash-text :data='data.title' ref='title' :onclick='function(){edit("title");}'></dash-text>
@@ -97,6 +97,26 @@
             value: ""
           }
         },
+        tabs: [{
+            name: "Geral",
+            attrs: ["background"]
+          }, {
+            name: "QR CODE",
+            attrs: ["qr_size"]
+          },
+          {
+            name: "Pergunta",
+            attrs: ["title"]
+          },
+          {
+            name: "Respostas",
+            attrs: ["options", "options_size"]
+          },
+          {
+            name: "Avançado",
+            attrs: ["survey_id"]
+          }
+        ],
         survey: {
           question: "",
           answers: [],

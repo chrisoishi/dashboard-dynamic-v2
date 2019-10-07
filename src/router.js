@@ -1,5 +1,6 @@
 import Vue from "vue"
 import Dashboard from "./views/dashboard";
+import Dashboards from "./views/dashboards";
 import Login from "./views/login"
 import Loading from "./views/loading"
 import Survey from "./views/survey"
@@ -24,7 +25,12 @@ const auth = (next) => {
 
 const routes = [{
         path: '/',
-        component: Dashboard,
+        component: Dashboards,
+        beforeEnter: (to, from, next) => auth(next)
+    },
+    {
+        path: '/templates',
+        component: Dashboards,
         beforeEnter: (to, from, next) => auth(next)
     },
     {

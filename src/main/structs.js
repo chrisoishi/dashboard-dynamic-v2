@@ -22,9 +22,14 @@ export default {
         },
         methods: {
             remove(card) {
-                if (this[card].indexOf('dash-card') > -1) this[card + "_deleted"] = true;
-                else this[card] = "dash-card";
-                this.empty();
+                if (card.indexOf("card1") > -1) {
+                    this.$refs.card2.copy();
+                    this.father.paste();
+                } else if (card.indexOf("card2") > -1) {
+                    this.$refs.card1.copy();
+                    this.father.paste();
+                }
+                // this.empty();
             },
             empty() {
                 // if (this.card1_deleted && this.card2_deleted) this.father.paste();
@@ -40,7 +45,7 @@ export default {
                 //         this.father.paste();
                 //     }
                 // }
-                if (this.card1_deleted && this.card2_deleted) this.father.remove();
+                // if (this.card1_deleted && this.card2_deleted) this.father.remove();
             },
             setConfig(cfg, card, onload) {
                 this.config[card] = cfg;
@@ -55,7 +60,7 @@ export default {
                 this.$refs.card2.onPageLeave();
             },
             load(cfg) {
-                if (cfg != null && cfg != "undefined") {
+                if (cfg != null) {
                     this.config.card1 = cfg.card1;
                     this.config.card2 = cfg.card2;
                     this.$refs.card1.load(cfg.card1);

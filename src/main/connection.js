@@ -1,5 +1,8 @@
-import routes from "./routes";
 export default {
+    props:{
+        dashboard_id:String,
+        dashboard_mode_edit:Boolean
+    },
     watch: {
         $route(to, from) {
 
@@ -9,8 +12,9 @@ export default {
         return {
             connection: {
                 id: "",
-                status: false,
+                status: true,
                 is_edit: false,
+                snapshot: null,
             },
         }
     },
@@ -51,17 +55,19 @@ export default {
             }
 
         },
-        conn_start: function (id,is_edit) {
-            this.connection.is_edit = is_edit;
-            if(!is_edit)this.dashboard.apresentation.active=true;
-            this.connection.id = id;
-            this.connection.status = true;
-            this.shows.popups.new_connection=false;
+        conn_start: function () {
+            this.connection.is_edit = this.dashboard_mode_edit;
+            if (!this.connection.is_edit) this.dashboard.apresentation.active = true;
+            this.connection.id = this.dashboard_id;
             this.configs_load();
-
         },
-        conn_editor() {
-            
-        },
+        conn_stop() {
+            this.configs_save(false);
+            this.connection.id = "";
+            this.connection.is_edit=false;
+            this.configs = Object.assign({}, this.configs_init);
+            if (this.connection.snapshot != null)this.connection.snapshot();
+            this.onConnectionStop();
+        }
     }
 }

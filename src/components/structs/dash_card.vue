@@ -42,6 +42,11 @@
       cascate: String,
       //card_id: Number
     },
+    data() {
+      return {
+        config: {}
+      }
+    },
     computed: {
       preview2: function () {
         if (this.preview && this.card.indexOf("dash-card-add") > -1) return false;
@@ -55,7 +60,7 @@
       },
       actions() {
         var actions = [];
-        if (this.app.models.current_card_cache.type) {
+        if (this.app.models.current_card_cache.type != null) {
           actions.push({
             icon: "check_box",
             tip: "Colar cartão aqui",
@@ -81,28 +86,19 @@
             }
           });
           actions.push({
-            icon: "swap_horiz",
-            tip: "Trocar cartão",
-            action: () => {
-              this.choices();
-            }
-          });
-
-          actions.push({
             icon: "brush",
             tip: "Editar",
             action: () => {
               this.edit();
             }
           });
-        }
+        } else {}
         return actions;
-
       }
     },
     data() {
       return {
-        card_id: "",
+        card_id: null,
         card: "dash-card-add",
         model_edit: false,
         is_editing: false,
@@ -117,45 +113,35 @@
         this.change_onload(component, false);
       },
       change_onload: function (component, onload) {
-        this.card_id = Math.floor((Math.random() * 99999) + 10000);
         this.app.shows.popups.card_add = false;
         this.card = component;
         this.$parent[this.card_slot] = component;
         if (!onload) {
           Vue.nextTick(() => {
-            setTimeout(() => {
-              this.$refs.card.setLayout(this.getSizerType());
-            }, 500);
+            this.setLayout();
             this.save(onload);
           });
         }
 
       },
-      load: function (cfg) {
-        if (cfg != null && cfg != 'undefined') {
-          if (!cfg.hasOwnProperty('id')) {
-            cfg.id = Math.floor((Math.random() * 99999) + 10000);
-          }
+      load: function (cfg, toSave = false) {
+        if (cfg != null) {
+          this.config = cfg.data;
           if (cfg.type == null) this.change_onload("dash-card-add", true);
-          else this.change_onload(cfg.type, true);
+          else this.change_onload(cfg.type, !toSave);
           Vue.nextTick(() => {
-            if (cfg.data != "null") {
-              if (cfg.type.indexOf('layout') > -1) {
-                this.$refs.card.load(cfg.data);
-              } else {
-                this.card_id = cfg.id;
-                this.$refs.card.data = cfg.data;
-                setTimeout(() => {
-                  this.$refs.card.setLayout(this.getSizerType());
-                }, 500);
-                this.$refs.card.refresh();
-                if (this.$refs.card.hasOwnProperty("onLoad")) this.$refs.card.onLoad();
-              }
+            if (cfg.type != null && cfg.type.indexOf('layout') > -1) {
+              this.$refs.card.load(cfg.data);
+            } else {
+              this.card_id = cfg.id;
+              this.$refs.card.data = cfg.data;
+              this.setLayout();
+              this.$refs.card.refresh();
+              if (this.$refs.card.hasOwnProperty("onLoad")) this.$refs.card.onLoad();
             }
-            //else this.setConfig(null,true);
-
           });
-
+        } else {
+          this.change_onload("dash-card-add", true);
         }
       },
       remove: function () {
@@ -169,38 +155,29 @@
         this.app.shows.popups.card_edit = false;
       },
       edit: function (attr) {
-        if (this.app.models.current_card_edit.object != null) this.app.models.current_card_edit.object.is_editing =
-          false;
-        this.app.models.current_card_edit.data = this.$refs.card.data;
-        var attrs = Object.getOwnPropertyNames(this.$refs.card.data);
-        for (var i = 0; i < attrs.length; i++) {
-          if (attr === attrs[i]) {
-            this.app.models.current_card_edit.item_opened = i;
-            break;
-          }
-        }
-
-        this.card_data = this.$refs.card.data;
-        this.app.shows.popups.card_edit = true;
-        this.app.models.current_card_edit.object = this;
+        this.$root.dash.dash_edit_card(this, attr);
         this.is_editing = true;
+        this.setLayout();
+
       },
       setChild: function (child) {
         this.child = child;
       },
       save: function (onload) {
-        if (this.$refs.card.extras != null) {
-          // $.each(this.$refs.card.extras, (attr, value) => {
-          //   this.app.addData(this.card_id, attr, value);
-          // });
-        }
         if (this.$refs.card.hasOwnProperty("onSave")) this.$refs.card.onSave();
         this.setConfig(this.$refs.card.data, onload);
 
       },
+      setLayout() {
+        if(this.$refs.card.hasOwnProperty("setLayout") ){
+          setTimeout(() => {
+            this.$refs.card.setLayout(this.getSizerType());
+          }, 500);
+        }
+      },
       setConfig: function (cfg, onload) {
         if (this.card_id == null) this.card_id = Math.floor((Math.random() * 99999) + 10000);
-        if (cfg == null) cfg = "null";
+        this.config = cfg;
         this.$parent.setConfig({
           type: this.card,
           id: this.card_id,
@@ -209,7 +186,7 @@
       },
       onPageJoin: function () {
         setTimeout(() => {
-          this.$refs.card.setLayout(this.getSizerType());
+          if (this.$refs.card.hasOwnProperty("setLayout")) this.$refs.card.setLayout(this.getSizerType());
         }, 500);
 
         if (this.$refs.card.hasOwnProperty("onPageJoin")) this.$refs.card.onPageJoin();
@@ -220,20 +197,27 @@
       cut: function () {
         this.app.models.current_card_cache.type = this.card;
         this.app.models.current_card_cache.data = this.$refs.card.data;
+        this.app.models.current_card_cache.config = this.config;
         this.app.models.current_card_cache.id = this.card_id;
         this.remove();
       },
+      copy: function () {
+        this.app.models.current_card_cache.type = this.card;
+        this.app.models.current_card_cache.data = Object.assign({}, this.$refs.card.data);
+        this.app.models.current_card_cache.config = this.config;
+        this.app.models.current_card_cache.id = this.card_id;
+      },
       paste: function () {
         this.change_onload(this.app.models.current_card_cache.type, true);
+        var cfg = {
+          type: this.app.models.current_card_cache.type,
+          data: this.app.models.current_card_cache.config
+        };
+        console.log(cfg);
         Vue.nextTick(() => {
-          this.$refs.card.data = this.app.models.current_card_cache.data;
-          this.card_id = this.app.models.current_card_cache.id;
-          setTimeout(() => {
-            this.$refs.card.setLayout(this.getSizerType());
-          }, 500);
-          this.$refs.card.refresh();
-          this.save(false);
-          this.app.models.current_card_cache.type = "";
+          this.load(cfg);
+          this.setConfig(cfg.data, false);
+          this.app.models.current_card_cache.type = null;
         });
 
       },

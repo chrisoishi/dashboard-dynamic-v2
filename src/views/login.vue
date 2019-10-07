@@ -15,7 +15,7 @@
                                         </v-text-field>
                                     </v-col>
                                     <v-col cols='12'>
-                                        <v-text-field :label="password_text" v-model='password'
+                                        <v-text-field :label="password_text" v-model='password' type='password'
                                             :rules="[form.rules.empty]"></v-text-field>
                                     </v-col>
                                     <v-col cols='12'>
@@ -43,8 +43,8 @@
             return {
                 email_text: "E-mail",
                 password_text: "Senha",
-                email: "oishi.chris@gmail.com",
-                password: "christiano",
+                email: "",
+                password: "",
                 form: {
                     rules: {
                         empty: (val) => {
