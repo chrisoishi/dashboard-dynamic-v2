@@ -54,7 +54,7 @@ export default {
                 }
                 this.$nextTick(() => {
                     this.is_ready_save = true;
-                    //this.configs_sync();
+                    this.configs_sync();
                 });
             });
 

@@ -65,7 +65,7 @@ export default {
             this.$root.app.confirm.set(true,{
                 title:"Sair",
                 text:"Deseja sair dessa dashboard?",
-                ok:"Sair e salvar",
+                ok:this.connection.is_edit?"Sair e salvar":"Sair",
                 cancel:"Ficar",
                 onOk:()=>{
                     this.configs_save(false);

@@ -7,8 +7,8 @@
           <v-toolbar-title>{{configs.general.title}}</v-toolbar-title>
           <div class='flex-grow-1'></div>
           <v-toolbar-items>
+            <template v-if='connection.is_edit'>
             <icon-tooltip v-if='is_need_save' icon="save" tip="Salvar alterações" @click='configs_save(false)' />
-
             <icon-tooltip :icon="configs.general.apresentation?'pause':'play_arrow'"
               :tip="configs.general.apresentation?'Desabilitar apresentação':'Habilitar apresentação'"
               @click='configs.general.apresentation=!configs.general.apresentation' />
@@ -19,6 +19,7 @@
 
             <icon-tooltip icon="delete" tip="Excluir tela atual" @click='dash_delete(dashboard.pages.current)' />
             <icon-tooltip icon="settings" tip="Configurações" @click='shows.popups.settings=true' />
+            </template>
             <icon-tooltip icon="close" tip="Sair" @click='conn_stop()' />
 
           </v-toolbar-items>

@@ -66,7 +66,7 @@ export default {
             }
             this.dashboard.apresentation.timeout = setTimeout(() => {
                 this.dash_start_apresentation()
-            }, this.configs.dashboards[this.configs.general.current_page-1].general.apresentation_time * 1000);
+            }, this.configs.dashboards[this.configs.general.current_page - 1].general.apresentation_time * 1000);
 
         },
         dash_refresh: function () {
@@ -91,26 +91,26 @@ export default {
             }
         },
         dash_change_order(direction) {
-            var current_page = this.configs.general.current_page-1;
+            var current_page = this.configs.general.current_page - 1;
             switch (direction) {
                 case "LEFT":
                     if (current_page > 0) {
-                        var dash = Object.assign({},this.configs.dashboards[current_page]);
-                        this.configs.dashboards.splice(current_page,1);
-                        this.configs.dashboards.splice(current_page-1,0,dash);
+                        var dash = Object.assign({}, this.configs.dashboards[current_page]);
+                        this.configs.dashboards.splice(current_page, 1);
+                        this.configs.dashboards.splice(current_page - 1, 0, dash);
                         this.configs_sync();
-                        this.$nextTick(()=>{
+                        this.$nextTick(() => {
                             this.configs.general.current_page--;
                         });
                     }
                     break;
                 case "RIGHT":
-                    if (current_page < this.configs.dashboards.length-1) {
-                        var dash = Object.assign({},this.configs.dashboards[current_page]);
-                        this.configs.dashboards.splice(current_page,1);
-                        this.configs.dashboards.splice(current_page+1,0,dash);
+                    if (current_page < this.configs.dashboards.length - 1) {
+                        var dash = Object.assign({}, this.configs.dashboards[current_page]);
+                        this.configs.dashboards.splice(current_page, 1);
+                        this.configs.dashboards.splice(current_page + 1, 0, dash);
                         this.configs_sync();
-                        this.$nextTick(()=>{
+                        this.$nextTick(() => {
                             this.configs.general.current_page++;
                         });
                     }
@@ -118,24 +118,38 @@ export default {
             }
         },
         dash_clear: function () {
-            this.$refs.dash[this.dashboard.pages.current - 1].$refs.card1.remove();
+            this.$refs.dash[this.configs.general.current_page - 1].$refs.card1.remove();
         },
         dash_add: function () {
-            this.configs.dashboards.splice(this.configs.general.current_page,0,null);
-            this.$nextTick(()=>{
+            this.configs.dashboards.splice(this.configs.general.current_page, 0, null);
+            this.$nextTick(() => {
                 this.configs_sync();
                 this.configs.general.current_page++;
             });
-            
+
         },
         dash_delete: function (index) {
-            if (this.configs.dashboards.length > 1) {
-                this.configs.dashboards.splice(index, 1);
-                this.configs.general.current_page--;
-            } else this.dash_clear();
-            console.log(this.configs.dashboards);
-            this.configs_sync();
-            this.configs_save();
+            this.$root.app.confirm.set(true, {
+                title: "Remover tela",
+                text: "Deseja mesmo remover essa tela?",
+                ok: "Sim",
+                cancel: "Não",
+                onOk: () => {
+                    if (this.configs.dashboards.length > 1){
+                        this.configs.dashboards.splice(index, 1);
+                        this.configs.general.current_page--;
+                    }
+                    else{
+                        this.configs.dashboards = [];
+                        this.dash_add();
+                        this.$nextTick(()=>{this.configs.general.current_page = 1;});
+                    }
+                    
+                    this.configs_sync();
+                    this.configs_save();
+                }
+            });
+
 
         },
         dash_get(index) {

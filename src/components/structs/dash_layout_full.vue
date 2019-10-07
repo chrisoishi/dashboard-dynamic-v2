@@ -31,13 +31,15 @@
         this.empty();
       },
       empty: function () {
-        if (this.index == this.$parent.dashboard.pages.total && this.index > 1) {
-          this.$parent.configs['dash' + this.$parent.dashboard.pages.total];
-          this.$parent.configs_save();
-          this.$parent.dashboard.pages.total--;
-          this.$parent.dashboard.pages.current = this.$parent.dashboard.pages.total;
+        // if (this.index == this.$parent.dashboard.pages.total && this.index > 1) {
+        //   this.$parent.configs['dash' + this.$parent.dashboard.pages.total];
+        //   this.$parent.configs_save();
+        //   this.$parent.dashboard.pages.total--;
+        //   this.$parent.dashboard.pages.current = this.$parent.dashboard.pages.total;
 
-        }
+        // }
+
+        this.card1 = 'dash-card-add';
       },
       setConfig: function (cfg, card, onload) {
         cfg.general = this.general;

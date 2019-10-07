@@ -149,8 +149,9 @@
         if (this.card.indexOf('dash-card-add') > -1) {
           this.$parent.remove(this.card_slot);
         } else {
+                  
           if (this.$refs.card.hasOwnProperty("onRemove")) this.$refs.card.onRemove();
-          this.change("dash-card-add")
+          this.change("dash-card-add");
         }
         this.app.shows.popups.card_edit = false;
       },
