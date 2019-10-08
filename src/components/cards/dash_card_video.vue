@@ -28,6 +28,10 @@
             value: ""
           },
         },
+        tabs: [{
+          name: "URL",
+          attrs: ["src"]
+        }],
         player: null,
       }
     },
@@ -74,9 +78,9 @@
       onPlayerStateChange: function (event) {
         if (event.data == 0) this.player.seekTo(0);
       },
-      onPageJoin(){
+      onPageJoin() {
         if (this.player != null) {
-          
+
           this.player.seekTo(0);
           this.player.playVideo();
 
